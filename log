@@ -1,0 +1,32 @@
+1000000 reads; of these:
+  1000000 (100.00%) were paired; of these:
+    453457 (45.35%) aligned concordantly 0 times
+    533677 (53.37%) aligned concordantly exactly 1 time
+    12866 (1.29%) aligned concordantly >1 times
+    ----
+    453457 pairs aligned concordantly 0 times; of these:
+      386558 (85.25%) aligned discordantly 1 time
+    ----
+    66899 pairs aligned 0 times concordantly or discordantly; of these:
+      133798 mates make up the pairs; of these:
+        91282 (68.22%) aligned 0 times
+        13177 (9.85%) aligned exactly 1 time
+        29339 (21.93%) aligned >1 times
+95.44% overall alignment rate
+Warning: skipping mate #1 of read 'NB501480:165:HY25GAFXX:1:11212:11528:5007 1:N:0:GAATTCGT+AGGATAGG' because length (0) <= # seed mismatches (0)
+Warning: skipping mate #1 of read 'NB501480:165:HY25GAFXX:1:11212:11528:5007 1:N:0:GAATTCGT+AGGATAGG' because it was < 2 characters long
+1000000 reads; of these:
+  1000000 (100.00%) were paired; of these:
+    92644 (9.26%) aligned concordantly 0 times
+    879256 (87.93%) aligned concordantly exactly 1 time
+    28100 (2.81%) aligned concordantly >1 times
+    ----
+    92644 pairs aligned concordantly 0 times; of these:
+      72531 (78.29%) aligned discordantly 1 time
+    ----
+    20113 pairs aligned 0 times concordantly or discordantly; of these:
+      40226 mates make up the pairs; of these:
+        20470 (50.89%) aligned 0 times
+        4822 (11.99%) aligned exactly 1 time
+        14934 (37.13%) aligned >1 times
+98.98% overall alignment rate

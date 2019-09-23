@@ -1,0 +1,49 @@
+#!/bin/bash
+
+echo "Removing Illumina Universal Adapter content"
+cutadapt -a AGATCGGAAGAG -A AGATCGGAAGAG -o tr_AH_S1_L001_R1.fastq -p tr_AH_S1_L001_R2.fastq AH_S1_L001_R1.fastq AH_S1_L001_R2.fastq
+echo "####################"
+
+# get pre-built index genome from bowtei2 webpage
+# http://bowtie-bio.sourceforge.net/bowtie2/index.shtml
+
+echo "Runing the bowtie2 aligner. Creating a SAM file"
+bowtie2 -p 4 -x GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.bowtie_index/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.bowtie_index -1 tr_AH_S1_L001_R1.fastq -2 tr_AH_S1_L001_R2.fastq >  AH_S1_L001.sam 2>> log
+echo "####################"
+
+echo "Converting the SAM file to BAM format"
+cat AH_S1_L001.sam | samtools sort > AH_S1_L001.bam
+echo "####################"
+
+echo "Sorting the bam file"
+samtools sort AH_S1_L001.bam -o AH_S1_L001_sorted.bam
+echo "####################"
+
+echo "Indexing the BAM file"
+samtools index AH_S1_L001_sorted.bam
+echo "####################"
+
+echo "Generating an alignment report"
+samtools flagstat AH_S1_L001_sorted.bam > alignment-report.txt
+echo "####################"
+
+# organized target region file
+awk '{print("chr"$1,$2,$3)}' AH_S1_target.txt > target.bed
+awk -v OFS="\t" '$1=$1' target.bed > test.bed
+mv test.bed target.bed
+sed -i '1d' target.bed
+
+echo "Generating statistics on the target regions"
+samtools stats AH_S1_L001_sorted.bam -t target.bed > stat_target.txt
+echo "####################"
+
+echo "Generating coverage for each target position"
+samtools bedcov target.bed AH_S1_L001_sorted.bam > coverage_target.txt
+echo "####################"
+
+echo "Calculate depth for each target position"
+samtools depth AH_S1_L001_sorted.bam -b target.bed > depth_target.txt
+echo "####################"
+
+awk '$1 == "chr9" {print $0}' depth_target.txt > chr9_depth.txt
+
