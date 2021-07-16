@@ -1,0 +1,103 @@
+# check
+https://www.youtube.com/watch?v=l4BAfRekohk
+https://www.youtube.com/watch?v=GWO1UddLVcM&list=PLyplibAMBjJyxjE47wdBY6E7oITXIhmPI
+
+# To get fastq files use sra-toolkit
+>> prefetch "id from ncbi website"
+
+# to convert sra to fastq
+>> fastq-dump "name of sra file"
+
+# to analyze and early observe we can use fastqc tool
+
+# a good toolkit for analys is ea-utils
+>> sudo apt-get install ea-utils
+
+# join if you have paired-end files
+>> fastq-join "name1" "name2" -o "outputname"
+
+# to trim the quality e.g.
+>> fastq-mcf -q 20 n/a "name of file" -o "outputname"
+
+############################################################
+# to allighn the sequnces with the gene reference
+
+method 1:
+# using IMGT webpage but we need fasta format
+# to convert fastq to fasta format
+>> sudo apt install fastx-toolkit
+>> fastq_to_fasta -i "inputname" -o "outputname"
+
+method 2:
+# download from https://milaboratory.com/software/
+
+
+method 3:
+Install Samtools (http://www.htslib.org/download/)
+install FastqToSam (http://broadinstitute.github.io/picard/)
+
+
+
+
+
+###########################################################
+
+# Stop on errors.
+set -uex
+
+# Reference genome accession number.
+ACC=AF086833
+
+# The SRR number for the sequencing data.
+SRR=SRR1972739
+
+# How many reads to unpack
+N=10000
+
+# The reference genome stored locally.
+REF=refs/$ACC.fa
+
+# The directory that store the reference.
+mkdir -p refs
+
+# Get the reference genome in FASTA format.
+efetch -db nuccore -format fasta -id $ACC > $REF
+
+# Build the bowtie2 index for the reference genome.
+bowtie2-build $REF $REF  1>> log.txt 2>> log.txt
+
+# Build IGV index for the reference genome.
+samtools faidx $REF
+
+# Obtain the FASTQ sequences for the SRR number.
+fastq-dump -X $N --split-files $SRR  >> log.txt
+
+# The name for the read pairs.
+R1=${SRR}_1.fastq
+R2=${SRR}_2.fastq
+
+# Run the bowtie2 aligner. Creates a SAM file.
+bowtie2 -x $REF -1 $R1 -2 $R2 > $SRR.sam 2>> log.txt
+
+# Convert the SAM file to BAM format.
+cat $SRR.sam | samtools sort > $SRR.bam
+
+# Index the BAM file.
+samtools index $SRR.bam
+
+#Generate an alignment report.
+samtools flagstat $SRR.bam > alignment-report.txt
+
+
+
+
+###################################################################################################
+what I did
+
+- get pre-built index genome from bowtei2 webpage
+- bowtie2 -p 4 -x GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.bowtie_index/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.bowtie_index -1 AH_S1_L001_R1.fastq -2 AH_S1_L001_R2.fastq -S AH_S1_L001.sam
+- cat AH_S1_L001.sam | samtools sort > AH_S1_L001.bam
+- samtools index AH_S1_L001.bam
+- samtools flagstat AH_S1_L001.bam > alignment-report.txt
+
+
